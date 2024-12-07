@@ -1,3 +1,6 @@
+import os
+
+from fastapi.responses import FileResponse
 from app import models, user
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,8 +22,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 app.include_router(user.router, tags=["Users"], prefix="/api/users")
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    file_name = "favicon.ico"
+    file_path = os.path.join(app.root_path, "static", file_name)
+    return FileResponse(
+        path=file_path,
+        headers={"Content-Disposition": "attachment; filename=" + file_name},
+    )
 
 
 @app.get("/api/healthchecker")
